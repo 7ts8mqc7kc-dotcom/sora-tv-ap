@@ -1,11 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
+  reactStrictMode: true,
+  experimental: {
+    appDir: true
   },
   images: {
-    unoptimized: true,
+    // فعل تحسين الصور؛ إن أردت تعطيله مؤقتًا عيّن unoptimized: true
+    unoptimized: false
   },
-}
+  eslint: {
+    // يفضّل تشغيله عند النشر لتجنب أخطاء غير مرئية
+    ignoreDuringBuilds: false
+  }
+};
 
-export default nextConfig
+export default nextConfig;
