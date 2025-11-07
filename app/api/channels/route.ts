@@ -67,10 +67,8 @@ function filterChannel(ch: IPTVChannel, category: string): boolean {
   const chName = ch.name?.toLowerCase() || "";
   const chCategory = ch.category?.toLowerCase();
 
-  // 1) تطابق مباشر مع وسم القناة
   if (chCategory === lowerCategory) return true;
 
-  // 2) كلمات مفتاحية
   let keywords = categoryKeywords[lowerCategory];
   if (lowerCategory === "top news") keywords = categoryKeywords["news"];
 
@@ -78,14 +76,13 @@ function filterChannel(ch: IPTVChannel, category: string): boolean {
     if (keywords.some((k) => chName.includes(k))) return true;
     if (chCategory && keywords.some((k) => chCategory.includes(k))) return true;
   } else {
-    // 3) لا كلمات معرفّة → نبحث باسم الفئة نفسه
     if (chName.includes(lowerCategory)) return true;
   }
   return false;
 }
 
 /* =========================
-   2) معالج GET
+   2) معالج GET — واحد فقط
 ========================= */
 
 export async function GET(request: NextRequest) {
@@ -97,27 +94,23 @@ export async function GET(request: NextRequest) {
     const page = Math.max(0, parseInt(searchParams.get("page") || "0"));
     const pageSize = Math.min(200, Math.max(1, parseInt(searchParams.get("pageSize") || "50")));
 
-    // 2) قراءة ملف القنوات من lib/channels.json
+    // 2) قراءة ملف القنوات
     const filePath = join(process.cwd(), "lib", "channels.json");
     const fileData = await readFile(filePath, "utf-8");
     const allChannelsData: ChannelData = JSON.parse(fileData);
 
-    // 3) تحضير القائمة حسب شروط البحث
+    // 3) تحضير القائمة
     let channelsToFilter: IPTVChannel[] = [];
 
     if (country) {
-      // حسب الدولة
       channelsToFilter = allChannelsData[country] || [];
       if (category && category !== "all-channels") {
         channelsToFilter = channelsToFilter.filter((c) => filterChannel(c, category));
       }
     } else if (category && !["all-channels", "history", "favorites"].includes(category)) {
-      // حسب الفئة عبر كل الدول — نضيف اسم الدولة لكل عنصر
       const allWithCountry: IPTVChannel[] = [];
       for (const [countryName, list] of Object.entries(allChannelsData)) {
-        for (const c of list) {
-          allWithCountry.push({ ...c, countryName });
-        }
+        for (const c of list) allWithCountry.push({ ...c, countryName });
       }
       channelsToFilter = allWithCountry.filter((c) => filterChannel(c, category));
     } else {
@@ -131,7 +124,7 @@ export async function GET(request: NextRequest) {
     const paginated = channelsToFilter.slice(start, end);
     const hasMore = end < total;
 
-    // 5) الإرجاع
+    // 5) الرد
     return NextResponse.json({ channels: paginated, hasMore, total });
   } catch (err) {
     console.error("Error in channels API route:", err);
@@ -141,4 +134,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+
 
