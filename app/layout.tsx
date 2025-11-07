@@ -1,6 +1,6 @@
 import type React from "react"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
 import "./globals.css"
 import "./video-player.css"
 import { ThemeProvider } from "@/components/theme-provider"
