@@ -1,16 +1,13 @@
 // 📁 app/page.tsx
 "use client";
+
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+
 import TopNavbar from "@/components/top-navbar";
 import CountrySidebar from "@/components/country-sidebar";
 import CategorySidebar from "@/components/CategorySidebar";
 import { IPTVChannel, preloadPriorityCountries } from "@/lib/iptv-channels";
-
-// ... ثم دالة واحدة فقط:
-export default function Home() {
-  // محتوى الصفحة
-}
 
 // المكونات التي تعمل على المتصفح فقط
 const GlobeViewer = dynamic(() => import("@/components/globe-viewer"), {
@@ -133,4 +130,107 @@ export default function Home() {
         {!isMobile &&
           activeChannel &&
           (selectedCountry || activeCategory !== "all-channels") && (
-            <div className="absolute top-0 bottom-0 z-30 flex items-center j
+            <div className="absolute top-0 bottom-0 z-30 flex items-center justify-center p-4 sm:p-8 left-0 right-0 sm:right-[320px] lg:right-[340px]">
+              <CountryDetail
+                country={selectedCountry ?? activeCategory}
+                channel={activeChannel.name}
+                streamUrlProp={activeChannel.url}
+                onBack={handleBackFromPlayer}
+                isMobile={isMobile}
+                activeCategory={activeCategory}
+              />
+            </div>
+          )}
+
+        {/* 🖥️ قائمة الدول (يمين) */}
+        {!isMobile && (
+          <aside
+            className="absolute right-0 top-16 bottom-0 w-[320px] lg:w-[340px] z-20 bg-gray-900/90 backdrop-blur-md"
+            role="complementary"
+          >
+            <CountrySidebar
+              selectedCountry={selectedCountry}
+              onSelectCountry={handleSelectCountry}
+              onSelectChannel={handleSelectChannel}
+              onClose={() => {}}
+              externalSearch={searchQuery}
+              currentTime={currentTime}
+              isMobile={isMobile}
+              activeCategory={activeCategory}
+              activeChannel={activeChannel}
+            />
+          </aside>
+        )}
+
+        {/* 📂 قائمة الفئات (يسار) */}
+        <>
+          <div
+            className={`fixed top-16 left-0 bottom-0 z-40 w-64 bg-[#0B0D11] shadow-lg transform transition-transform duration-300 ease-in-out ${
+              isCategorySidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
+            <CategorySidebar
+              activeCategory={activeCategory}
+              onCategorySelect={handleCategorySelect}
+              onClose={toggleCategorySidebar}
+            />
+          </div>
+          {isCategorySidebarOpen && (
+            <div className="fixed inset-0 bg-black/50 z-30" onClick={toggleCategorySidebar} />
+          )}
+        </>
+
+        {/* 📱 قائمة الهاتف (القنوات) */}
+        {isMobile && (
+          <>
+            <div
+              className={`fixed left-0 right-0 z-20 bg-[#0B0D11] transition-transform duration-500 ${
+                mobileSidebarOpen ? "translate-y-0" : "translate-y-full"
+              } top-16 bottom-0 flex flex-col`}
+            >
+              {activeChannel && (
+                <div className="w-full bg-black flex-shrink-0 relative">
+                  <CountryDetail
+                    country={selectedCountry ?? activeCategory}
+                    channel={activeChannel.name}
+                    streamUrlProp={activeChannel.url}
+                    onBack={handleBackFromPlayer}
+                    isMobile={isMobile}
+                    activeCategory={activeCategory}
+                  />
+                </div>
+              )}
+
+              <div
+                onClick={toggleMobileSidebar}
+                className={`w-full flex items-center justify-center cursor-grab flex-shrink-0 ${
+                  activeChannel ? "py-0" : "py-1.5"
+                }`}
+                aria-label="Toggle sidebar"
+              >
+                <span className="w-12 h-1.5 bg-gray-700 rounded-full" />
+              </div>
+
+              <div className="flex-1 overflow-y-auto custom-scroll">
+                <CountrySidebar
+                  selectedCountry={selectedCountry}
+                  onSelectCountry={handleSelectCountry}
+                  onSelectChannel={handleSelectChannel}
+                  onClose={toggleMobileSidebar}
+                  externalSearch={setSearchQuery ? searchQuery : ""}
+                  currentTime={currentTime}
+                  isMobile={isMobile}
+                  activeCategory={activeCategory}
+                  activeChannel={activeChannel}
+                />
+              </div>
+            </div>
+            {mobileSidebarOpen && (
+              <div className="fixed inset-0 bg-black/50 z-10" onClick={toggleMobileSidebar} />
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
