@@ -1,13 +1,16 @@
 // 📁 app/page.tsx
 "use client";
-
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-
 import TopNavbar from "@/components/top-navbar";
 import CountrySidebar from "@/components/country-sidebar";
 import CategorySidebar from "@/components/CategorySidebar";
 import { IPTVChannel, preloadPriorityCountries } from "@/lib/iptv-channels";
+
+// ... ثم دالة واحدة فقط:
+export default function Home() {
+  // محتوى الصفحة
+}
 
 // المكونات التي تعمل على المتصفح فقط
 const GlobeViewer = dynamic(() => import("@/components/globe-viewer"), {
