@@ -240,3 +240,6 @@ export default function Home() {
     </div>
   )
 }
+export default function Page() {
+  return <div>مرحبا بك في Sora TV</div>;
+}
