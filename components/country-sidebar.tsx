@@ -144,7 +144,16 @@ export default function CountrySidebar({
   const saveToHistory = (channel: IPTVChannel) => {
     if (typeof window === 'undefined') return;
     try {
-      const channelToSave: IPTVChannel = { name: channel.name, url: channel.url, countryName: channel.countryName || selectedCountry, category: channel.category };
+      // 🔴🔴🔴 التعديل لحل خطأ TypeScript في Vercel 🔴🔴🔴
+      const channelToSave: IPTVChannel = { 
+        name: channel.name, 
+        url: channel.url, 
+        // نستخدم (?? undefined) لتحويل أي قيمة 'null' من 'selectedCountry' إلى 'undefined'
+        countryName: channel.countryName || selectedCountry ?? undefined, 
+        category: channel.category 
+      };
+      // 🔴🔴🔴 انتهى التعديل 🔴🔴🔴
+
       let history: IPTVChannel[] = JSON.parse(localStorage.getItem('sora_tv_history') || '[]');
       history = history.filter(c => !(c.name === channelToSave.name && c.countryName === channelToSave.countryName));
       history.unshift(channelToSave);
