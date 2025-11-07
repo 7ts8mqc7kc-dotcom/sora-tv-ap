@@ -1,17 +1,8 @@
+// 📁 next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    appDir: true
-  },
-  images: {
-    // فعل تحسين الصور؛ إن أردت تعطيله مؤقتًا عيّن unoptimized: true
-    unoptimized: false
-  },
-  eslint: {
-    // يفضّل تشغيله عند النشر لتجنب أخطاء غير مرئية
-    ignoreDuringBuilds: false
-  }
+  images: { unoptimized: false },
+  eslint: { ignoreDuringBuilds: true }
 };
-
 export default nextConfig;
