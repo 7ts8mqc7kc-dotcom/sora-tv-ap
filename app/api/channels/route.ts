@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -189,4 +190,5 @@ export async function GET(request: NextRequest) {
     console.error("Error in channels API route:", error);
     return NextResponse.json({ error: 'An internal server error occurred' }, { status: 500 });
   }
+
 }
